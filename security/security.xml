@@ -1,0 +1,41 @@
+<odoo>
+    <record id="module_category_document_reference" model="ir.module.category">
+        <field name="name">Document References</field>
+        <field name="sequence">25</field>
+    </record>
+
+    <!--
+        Odoo 19 security structure:
+        ir.module.category -> res.groups.privilege -> res.groups
+
+        In Odoo 19:
+        - res.groups does not use category_id directly
+        - res.groups does not use users directly
+        - use privilege_id for grouping
+    -->
+    <record id="privilege_document_reference_access" model="res.groups.privilege">
+        <field name="name">Document Reference Access</field>
+        <field name="category_id" ref="document_reference_management.module_category_document_reference"/>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="group_document_reference_viewer" model="res.groups">
+        <field name="name">Viewer</field>
+        <field name="privilege_id" ref="document_reference_management.privilege_document_reference_access"/>
+        <field name="comment">Can view document reference records.</field>
+    </record>
+
+    <record id="group_document_reference_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="privilege_id" ref="document_reference_management.privilege_document_reference_access"/>
+        <field name="implied_ids" eval="[(4, ref('document_reference_management.group_document_reference_viewer'))]"/>
+        <field name="comment">Can create and manage document references.</field>
+    </record>
+
+    <record id="group_document_reference_admin" model="res.groups">
+        <field name="name">Admin</field>
+        <field name="privilege_id" ref="document_reference_management.privilege_document_reference_access"/>
+        <field name="implied_ids" eval="[(4, ref('document_reference_management.group_document_reference_user'))]"/>
+        <field name="comment">Can configure document reference masters and settings.</field>
+    </record>
+</odoo>

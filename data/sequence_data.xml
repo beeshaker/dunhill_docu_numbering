@@ -1,0 +1,44 @@
+<odoo>
+    <record id="seq_document_reference_internal" model="ir.sequence">
+        <field name="name">Document Reference Internal Record</field>
+        <field name="code">document.reference.internal</field>
+        <field name="prefix">DR/</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <record id="company_dcl" model="document.reference.company">
+        <field name="code">DCL</field>
+        <field name="name">Dunhill Consulting Ltd</field>
+        <field name="active">1</field>
+    </record>
+
+    <record id="department_coo" model="document.reference.department">
+        <field name="code">COO</field>
+        <field name="name">Chief Operating Officer</field>
+        <field name="active">1</field>
+    </record>
+
+    <record id="department_dir" model="document.reference.department">
+        <field name="code">DIR</field>
+        <field name="name">Director</field>
+        <field name="active">1</field>
+    </record>
+
+    <record id="department_lgl" model="document.reference.department">
+        <field name="code">LGL</field>
+        <field name="name">Legal</field>
+        <field name="active">1</field>
+    </record>
+
+    <record id="document_type_internal_memo" model="document.reference.type">
+        <field name="name">Internal Memo</field>
+        <field name="active">1</field>
+    </record>
+
+    <record id="document_type_letter" model="document.reference.type">
+        <field name="name">Letter</field>
+        <field name="active">1</field>
+    </record>
+</odoo>

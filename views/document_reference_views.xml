@@ -1,0 +1,197 @@
+<odoo>
+    <!-- ========================================================= -->
+    <!-- Document Reference List View                              -->
+    <!-- ========================================================= -->
+    <record id="view_document_reference_list" model="ir.ui.view">
+        <field name="name">document.reference.list</field>
+        <field name="model">document.reference</field>
+        <field name="arch" type="xml">
+            <list string="Document References"
+                  decoration-danger="status == 'cancelled'"
+                  decoration-muted="status == 'superseded'">
+                <field name="name"/>
+                <field name="issue_date"/>
+                <field name="company_id"/>
+                <field name="department_id"/>
+                <field name="document_type_id"/>
+                <field name="property_scope"/>
+                <field name="recipient_name"/>
+                <field name="subject"/>
+                <field name="status"/>
+                <field name="manual_override"/>
+                <field name="watermark_applied"/>
+                <field name="uploaded_by_id"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Document Reference Form View                              -->
+    <!-- ========================================================= -->
+    <record id="view_document_reference_form" model="ir.ui.view">
+        <field name="name">document.reference.form</field>
+        <field name="model">document.reference</field>
+        <field name="arch" type="xml">
+            <form string="Document Reference">
+                <header>
+                    <button name="action_analyze_document"
+                            type="object"
+                            string="Analyze Document"
+                            class="btn-secondary"
+                            invisible="status != 'draft'"/>
+
+                    <button name="action_generate_reference"
+                            type="object"
+                            string="Generate Reference"
+                            class="btn-primary"
+                            invisible="status != 'draft'"/>
+
+                    <button name="action_cancel_reference"
+                            type="object"
+                            string="Cancel"
+                            class="btn-danger"
+                            invisible="status not in ('issued', 'revised')"/>
+
+                    <button name="action_reset_to_draft"
+                            type="object"
+                            string="Reset to Draft"
+                            groups="document_reference_management.group_document_reference_admin"
+                            invisible="status == 'draft'"/>
+
+                    <field name="status"
+                           widget="statusbar"
+                           statusbar_visible="draft,issued,cancelled,superseded,revised"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="Reference will be generated"
+                                   readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Reference Details">
+                            <field name="company_id"/>
+                            <field name="department_id"/>
+                            <field name="issue_date"/>
+                            <field name="reference_year" readonly="1"/>
+                            <field name="serial_number" readonly="1"/>
+                            <field name="document_type_id"/>
+                        </group>
+
+                        <group string="Recipient / Subject">
+                            <field name="recipient_name"/>
+                            <field name="recipient_company"/>
+                            <field name="prepared_by"/>
+                            <field name="uploaded_by_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="subject"/>
+                        <field name="remarks"/>
+                    </group>
+
+                    <group string="Property Scope">
+                        <field name="property_scope"/>
+                        <field name="property_ids"
+                               widget="many2many_tags"
+                               invisible="property_scope not in ('single_property', 'multiple_properties')"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Files">
+                            <group>
+                                <field name="original_file_name"/>
+                                <field name="original_file" filename="original_file_name"/>
+                                <field name="generated_file_name" readonly="1"/>
+                                <field name="generated_file" filename="generated_file_name" readonly="1"/>
+                                <field name="file_type" readonly="1"/>
+                                <field name="watermark_applied"/>
+                            </group>
+                        </page>
+
+                        <page string="Revision / Override">
+                            <group>
+                                <field name="previous_reference_id"/>
+                                <field name="new_reference_id" readonly="1"/>
+                                <field name="manual_override"/>
+                                <field name="manual_reference" invisible="not manual_override"/>
+                                <field name="override_reason" invisible="not manual_override"/>
+                            </group>
+                        </page>
+
+                        <page string="AI Suggestions">
+                            <field name="ai_suggested_metadata" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Simple Odoo 19 Safe Search View                           -->
+    <!-- ========================================================= -->
+    <record id="view_document_reference_search" model="ir.ui.view">
+        <field name="name">document.reference.search</field>
+        <field name="model">document.reference</field>
+        <field name="arch" type="xml">
+            <search string="Search Document References">
+                <field name="name" string="Reference Number"/>
+                <field name="subject"/>
+                <field name="recipient_name"/>
+                <field name="recipient_company"/>
+                <field name="company_id"/>
+                <field name="department_id"/>
+                <field name="document_type_id"/>
+
+                <filter name="filter_draft"
+                        string="Draft"
+                        domain="[('status','=','draft')]"/>
+
+                <filter name="filter_issued"
+                        string="Issued"
+                        domain="[('status','=','issued')]"/>
+
+                <filter name="filter_cancelled"
+                        string="Cancelled"
+                        domain="[('status','=','cancelled')]"/>
+
+                <filter name="filter_superseded"
+                        string="Superseded"
+                        domain="[('status','=','superseded')]"/>
+
+                <filter name="filter_revised"
+                        string="Revised"
+                        domain="[('status','=','revised')]"/>
+
+                <filter name="filter_manual_override"
+                        string="Manual Overrides"
+                        domain="[('manual_override','=',True)]"/>
+
+                <filter name="filter_my_uploads"
+                        string="My Uploads"
+                        domain="[('uploaded_by_id','=',uid)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================= -->
+    <!-- Window Action                                             -->
+    <!-- ========================================================= -->
+    <record id="action_document_reference" model="ir.actions.act_window">
+        <field name="name">Document References</field>
+        <field name="res_model">document.reference</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_document_reference_search"/>
+        <field name="context">{}</field>
+    </record>
+</odoo>

@@ -1,0 +1,48 @@
+<odoo>
+    <record id="res_config_settings_view_form_document_reference" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.document.reference</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Document References" string="Document References" name="document_reference_management">
+                    <block title="Numbering Settings">
+                        <setting string="Serial Digits">
+                            <field name="document_ref_serial_digits"/>
+                        </setting>
+
+                        <setting string="Allow Manual Override">
+                            <field name="document_ref_allow_manual_override"/>
+                        </setting>
+                    </block>
+
+                    <block title="AI / Ollama Settings">
+                        <setting string="Enable AI Document Analysis">
+                            <field name="document_ref_use_ai_analysis"/>
+                        </setting>
+
+                        <setting string="LLM Provider">
+                            <field name="document_ref_llm_provider"/>
+                        </setting>
+
+                        <setting string="Ollama Base URL">
+                            <field name="document_ref_ollama_base_url"/>
+                        </setting>
+
+                        <setting string="Ollama Model">
+                            <field name="document_ref_ollama_model"/>
+                        </setting>
+
+                        <setting string="Ollama Temperature">
+                            <field name="document_ref_ollama_temperature"/>
+                        </setting>
+
+                        <setting string="Ollama Timeout Seconds">
+                            <field name="document_ref_ollama_timeout"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

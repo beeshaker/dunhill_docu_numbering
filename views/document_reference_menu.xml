@@ -1,0 +1,56 @@
+<odoo>
+    <menuitem
+        id="menu_document_reference_root"
+        name="Document References"
+        sequence="10"
+        groups="document_reference_management.group_document_reference_viewer"/>
+
+    <menuitem
+        id="menu_document_reference_register"
+        name="Master Register"
+        parent="menu_document_reference_root"
+        action="action_document_reference"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_document_reference_configuration"
+        name="Configuration"
+        parent="menu_document_reference_root"
+        sequence="90"
+        groups="document_reference_management.group_document_reference_admin"/>
+
+    <menuitem
+        id="menu_document_reference_companies"
+        name="Companies"
+        parent="menu_document_reference_configuration"
+        action="action_document_reference_company"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_document_reference_departments"
+        name="Departments"
+        parent="menu_document_reference_configuration"
+        action="action_document_reference_department"
+        sequence="20"/>
+
+    <menuitem
+        id="menu_document_reference_types"
+        name="Document Types"
+        parent="menu_document_reference_configuration"
+        action="action_document_reference_type"
+        sequence="30"/>
+
+    <menuitem
+        id="menu_document_reference_properties"
+        name="Properties"
+        parent="menu_document_reference_configuration"
+        action="action_document_reference_property"
+        sequence="40"/>
+
+    <menuitem
+        id="menu_document_reference_sequences"
+        name="Sequences"
+        parent="menu_document_reference_configuration"
+        action="action_document_reference_sequence"
+        sequence="50"/>
+</odoo>
