@@ -148,13 +148,19 @@ class DocumentReference(models.Model):
         tracking=True,
     )
 
-    has_letterhead = fields.Boolean(
-        string="Force Letterhead Mode",
+    apply_letterhead = fields.Boolean(
+        string="Apply Letterhead",
         tracking=True,
-        help="Letterhead detection is automatic for PDFs. Enable this only to force "
-             "letterhead placement when auto-detection does not pick it up (e.g. scanned "
-             "PDFs where the letterhead is a flat image without selectable content). "
-             "The reference number will then be placed below the configured header height.",
+        help="Merge the company letterhead PDF as a background behind this document's pages. "
+             "The letterhead file must be uploaded on the selected Company record.",
+    )
+
+    has_letterhead = fields.Boolean(
+        string="Force Letterhead Ref Placement",
+        tracking=True,
+        help="PDFs with a letterhead are detected automatically. Enable this only to force "
+             "the reference number below the configured header height when auto-detection "
+             "fails (e.g. fully scanned / image-only PDFs).",
     )
 
     ai_suggested_metadata = fields.Text(
@@ -459,6 +465,20 @@ class DocumentReference(models.Model):
 
                 input_path.write_bytes(base64.b64decode(rec.original_file or b""))
 
+                # Resolve letterhead PDF bytes from company when requested.
+                letterhead_pdf_bytes = None
+                if rec.apply_letterhead:
+                    if not rec.company_id:
+                        raise UserError(_("Select a Company before applying the letterhead."))
+                    if not rec.company_id.letterhead_file:
+                        raise UserError(
+                            _("Company '%s' has no letterhead PDF uploaded. "
+                              "Go to the Company record and upload one first.")
+                            % rec.company_id.name
+                        )
+                    letterhead_pdf_bytes = base64.b64decode(rec.company_id.letterhead_file)
+
+                # Manual height override for scanned PDFs where auto-detection fails.
                 letterhead_header_height = 0
                 if rec.has_letterhead:
                     height_val = self.env["ir.config_parameter"].sudo().get_param(
@@ -475,6 +495,7 @@ class DocumentReference(models.Model):
                     output_path=output_path,
                     reference_number=reference_number,
                     add_watermark=rec.watermark_applied,
+                    letterhead_pdf_bytes=letterhead_pdf_bytes,
                     letterhead_header_height=letterhead_header_height,
                 )
 

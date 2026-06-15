@@ -77,20 +77,36 @@ def insert_reference_pdf(
     *,
     add_watermark: bool = False,
     logo_path: Path | None = None,
+    letterhead_pdf_bytes: bytes | None = None,
     letterhead_header_height: int = 0,
 ) -> Path:
     doc = fitz.open(str(input_path))
     header_text = f"Ref No.: {reference_number}"
     watermark_path = create_faded_logo(logo_path, opacity=0.10) if add_watermark else None
 
+    lh_doc = fitz.open("pdf", letterhead_pdf_bytes) if letterhead_pdf_bytes else None
+
     try:
         for page in doc:
+            if lh_doc:
+                # Merge letterhead as a background underlay so document content
+                # remains on top. Use the first page of the letterhead for every
+                # page of the document (standard letterhead behaviour).
+                page.show_pdf_page(
+                    page.rect,
+                    lh_doc,
+                    0,
+                    overlay=False,
+                )
+
             if watermark_path:
                 _insert_logo_watermark(page, watermark_path)
 
             rect = page.rect
 
             # Manual override takes priority; otherwise auto-detect from page content.
+            # When a letterhead was just merged in, always scan — the merge makes the
+            # letterhead content visible to the block detector.
             effective_height = letterhead_header_height or _detect_header_height(page)
 
             if effective_height > 0:
@@ -113,5 +129,7 @@ def insert_reference_pdf(
         doc.save(str(output_path), garbage=4, deflate=True)
     finally:
         doc.close()
+        if lh_doc:
+            lh_doc.close()
 
     return output_path

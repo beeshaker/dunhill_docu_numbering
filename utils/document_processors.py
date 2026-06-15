@@ -12,6 +12,7 @@ def process_document_file(
     output_path: Path,
     reference_number: str,
     add_watermark: bool = False,
+    letterhead_pdf_bytes: bytes | None = None,
     letterhead_header_height: int = 0,
 ):
     """Stamp the generated reference into Word, PDF, or Excel files."""
@@ -31,6 +32,7 @@ def process_document_file(
             output_path,
             reference_number,
             add_watermark=add_watermark,
+            letterhead_pdf_bytes=letterhead_pdf_bytes,
             letterhead_header_height=letterhead_header_height,
         )
 

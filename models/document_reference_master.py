@@ -10,6 +10,14 @@ class DocumentReferenceCompany(models.Model):
     name = fields.Char(required=True)
     active = fields.Boolean(default=True)
 
+    letterhead_file = fields.Binary(
+        string="Letterhead PDF",
+        attachment=True,
+        help="Upload a PDF containing the company letterhead. "
+             "It will be merged as a background when 'Apply Letterhead' is enabled on a document.",
+    )
+    letterhead_file_name = fields.Char(string="Letterhead File Name")
+
     _sql_constraints = [
         ("code_unique", "unique(code)", "Company code must be unique."),
     ]

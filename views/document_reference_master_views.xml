@@ -11,6 +11,30 @@
         </field>
     </record>
 
+    <record id="view_document_reference_company_form" model="ir.ui.view">
+        <field name="name">document.reference.company.form</field>
+        <field name="model">document.reference.company</field>
+        <field name="arch" type="xml">
+            <form string="Company">
+                <sheet>
+                    <group>
+                        <group string="Identity">
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Letterhead">
+                            <field name="letterhead_file_name"/>
+                            <field name="letterhead_file"
+                                   filename="letterhead_file_name"
+                                   help="Upload the company letterhead as a PDF. It will be merged as a background behind document pages when 'Apply Letterhead' is enabled."/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="action_document_reference_company" model="ir.actions.act_window">
         <field name="name">Companies</field>
         <field name="res_model">document.reference.company</field>
