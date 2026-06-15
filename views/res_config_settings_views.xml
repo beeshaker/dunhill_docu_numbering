@@ -16,6 +16,13 @@
                         </setting>
                     </block>
 
+                    <block title="Letterhead Settings">
+                        <setting string="Letterhead Header Height (pt)"
+                                 help="Height of the letterhead header area in PDF points (1 pt ≈ 0.35 mm). The default of 130 pt (~46 mm) fits the standard Dunhill letterhead. Increase or decrease to match your letterhead design.">
+                            <field name="document_ref_letterhead_header_height"/>
+                        </setting>
+                    </block>
+
                     <block title="AI / Ollama Settings">
                         <setting string="Enable AI Document Analysis">
                             <field name="document_ref_use_ai_analysis"/>

@@ -6,6 +6,13 @@ import fitz  # PyMuPDF
 
 from .branding import create_faded_logo
 
+# Scan only the top portion of the page for header content.
+_HEADER_SCAN_ZONE = 180  # points (~63 mm on A4)
+
+# Minimum detected content height to be treated as a letterhead rather than
+# a simple page number or single-line title.
+_LETTERHEAD_MIN_HEIGHT = 50  # points (~18 mm)
+
 
 def _insert_logo_watermark(page, watermark_path: Path) -> None:
     rect = page.rect
@@ -27,6 +34,42 @@ def _insert_logo_watermark(page, watermark_path: Path) -> None:
     )
 
 
+def _detect_header_height(page) -> int:
+    """
+    Scan the top of the page and return the y-coordinate of the lowest content
+    found in the header zone, or 0 if no letterhead is detected.
+
+    Detection criteria (either triggers):
+    - An image block exists in the top scan zone (company logo).
+    - Three or more text blocks span more than _LETTERHEAD_MIN_HEIGHT points
+      (multi-column address/contact layout typical of letterheads).
+    Vector drawings (separator lines, borders) in the zone extend the height
+    but do not independently trigger detection.
+    """
+    max_y = 0.0
+    has_image = False
+    text_block_count = 0
+
+    for block in page.get_text("dict")["blocks"]:
+        x0, y0, x1, y1 = block["bbox"]
+        if y0 >= _HEADER_SCAN_ZONE:
+            continue
+        if block["type"] == 1:  # image
+            has_image = True
+        else:
+            text_block_count += 1
+        max_y = max(max_y, y1)
+
+    # Include separator lines / decorative rules drawn in the header zone.
+    for drawing in page.get_drawings():
+        drect = drawing.get("rect")
+        if drect and drect.y0 < _HEADER_SCAN_ZONE:
+            max_y = max(max_y, drect.y1)
+
+    is_letterhead = has_image or (text_block_count >= 3 and max_y > _LETTERHEAD_MIN_HEIGHT)
+    return int(max_y) if is_letterhead else 0
+
+
 def insert_reference_pdf(
     input_path: Path,
     output_path: Path,
@@ -34,6 +77,7 @@ def insert_reference_pdf(
     *,
     add_watermark: bool = False,
     logo_path: Path | None = None,
+    letterhead_header_height: int = 0,
 ) -> Path:
     doc = fitz.open(str(input_path))
     header_text = f"Ref No.: {reference_number}"
@@ -45,8 +89,19 @@ def insert_reference_pdf(
                 _insert_logo_watermark(page, watermark_path)
 
             rect = page.rect
-            x = max(rect.width - 220, 36)
-            y = 24
+
+            # Manual override takes priority; otherwise auto-detect from page content.
+            effective_height = letterhead_header_height or _detect_header_height(page)
+
+            if effective_height > 0:
+                # Place below the detected/configured letterhead, left-aligned
+                # like a standard "Our Ref:" line in a business letter.
+                x = 36
+                y = effective_height + 14
+            else:
+                x = max(rect.width - 220, 36)
+                y = 24
+
             page.insert_text(
                 (x, y),
                 header_text,

@@ -113,6 +113,8 @@
                                 <field name="generated_file" filename="generated_file_name" readonly="1"/>
                                 <field name="file_type" readonly="1"/>
                                 <field name="watermark_applied"/>
+                                <field name="has_letterhead"
+                                       help="PDFs are scanned automatically for letterheads. Enable this only if auto-detection fails (e.g. fully scanned/image-only PDFs)."/>
                             </group>
                         </page>
 

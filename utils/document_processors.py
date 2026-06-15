@@ -12,6 +12,7 @@ def process_document_file(
     output_path: Path,
     reference_number: str,
     add_watermark: bool = False,
+    letterhead_header_height: int = 0,
 ):
     """Stamp the generated reference into Word, PDF, or Excel files."""
     suffix = input_path.suffix.lower()
@@ -30,6 +31,7 @@ def process_document_file(
             output_path,
             reference_number,
             add_watermark=add_watermark,
+            letterhead_header_height=letterhead_header_height,
         )
 
     if suffix == ".xlsx":

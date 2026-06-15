@@ -56,3 +56,12 @@ class ResConfigSettings(models.TransientModel):
         config_parameter="document_reference_management.ollama_timeout",
         default=60,
     )
+
+    document_ref_letterhead_header_height = fields.Integer(
+        string="Letterhead Header Height (pt)",
+        config_parameter="document_reference_management.letterhead_header_height",
+        default=130,
+        help="Height in PDF points of the letterhead header area (1 pt ≈ 0.35 mm, "
+             "so 130 pt ≈ 46 mm). When 'Document has Letterhead' is enabled on a record, "
+             "the reference number will be placed this many points from the top of the page.",
+    )

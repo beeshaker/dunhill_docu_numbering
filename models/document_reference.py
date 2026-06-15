@@ -148,6 +148,15 @@ class DocumentReference(models.Model):
         tracking=True,
     )
 
+    has_letterhead = fields.Boolean(
+        string="Force Letterhead Mode",
+        tracking=True,
+        help="Letterhead detection is automatic for PDFs. Enable this only to force "
+             "letterhead placement when auto-detection does not pick it up (e.g. scanned "
+             "PDFs where the letterhead is a flat image without selectable content). "
+             "The reference number will then be placed below the configured header height.",
+    )
+
     ai_suggested_metadata = fields.Text(
         string="AI Suggested Metadata JSON",
         readonly=True,
@@ -450,11 +459,23 @@ class DocumentReference(models.Model):
 
                 input_path.write_bytes(base64.b64decode(rec.original_file or b""))
 
+                letterhead_header_height = 0
+                if rec.has_letterhead:
+                    height_val = self.env["ir.config_parameter"].sudo().get_param(
+                        "document_reference_management.letterhead_header_height",
+                        default="130",
+                    )
+                    try:
+                        letterhead_header_height = int(height_val)
+                    except Exception:
+                        letterhead_header_height = 130
+
                 process_document_file(
                     input_path=input_path,
                     output_path=output_path,
                     reference_number=reference_number,
                     add_watermark=rec.watermark_applied,
+                    letterhead_header_height=letterhead_header_height,
                 )
 
                 rec.generated_file = base64.b64encode(output_path.read_bytes())
