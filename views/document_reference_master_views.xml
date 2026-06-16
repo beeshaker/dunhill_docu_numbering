@@ -3,7 +3,7 @@
         <field name="name">document.reference.company.list</field>
         <field name="model">document.reference.company</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <list>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="active"/>
